@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BookOpen, Check, ChevronRight, CircleHelp, ClipboardCheck, FlaskConical, Gauge, Home, Menu, Moon, RotateCcw, Search, Sun, X } from 'lucide-react'
 import { glossary, modules, quizQuestions, scenarios } from './content'
 import './styles.css'
+import './interview-question.css'
 
 const STORE = 'infraprep-progress-v1'
 const defaultState = { completed: [], baseline: null, final: null, notes: {}, theme: 'light' }
@@ -20,7 +21,6 @@ function App() {
   const score = Math.round((progress.completed.length / modules.length) * 70 + ((progress.final?.score || progress.baseline?.score || 0) / quizQuestions.length) * 30)
   const navigate = (next) => { setView(next); setMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const openModule = (mod) => { setActiveModule(mod); navigate('lesson') }
-  const updateNote = (id, note) => setProgress(p => ({ ...p, notes: { ...p.notes, [id]: note } }))
   const completeModule = (id) => setProgress(p => ({ ...p, completed: p.completed.includes(id) ? p.completed : [...p.completed, id] }))
   const reset = () => { if (confirm('Reset all lesson and quiz progress?')) setProgress({ ...defaultState, theme: progress.theme }) }
   return <div className="app-shell">
@@ -30,7 +30,7 @@ function App() {
       <main>
         {view === 'overview' && <Overview progress={progress} score={score} navigate={navigate} openModule={openModule} />}
         {view === 'learn' && <LearningPath progress={progress} openModule={openModule} />}
-        {view === 'lesson' && <Lesson module={activeModule} progress={progress} updateNote={updateNote} completeModule={completeModule} openModule={openModule} navigate={navigate} />}
+        {view === 'lesson' && <Lesson module={activeModule} progress={progress} completeModule={completeModule} openModule={openModule} navigate={navigate} />}
         {view === 'lab' && <PracticeLab />}
         {view === 'quiz' && <QuizHub progress={progress} setProgress={setProgress} />}
         {view === 'glossary' && <Glossary />}
@@ -79,9 +79,19 @@ function LearningPathCompact({ progress, openModule, navigate }) { return <aside
 
 function LearningPath({ progress, openModule }) { return <div className="page narrow"><div className="page-title"><span>Eight modules · about five hours</span><h1>Learning path</h1><p>Start with the physical system, then learn to diagnose evidence and own the RMA outcome. Every lesson includes plain-language explanations, commands, and interview prompts.</p></div><div className="module-list">{modules.map(m => <button key={m.id} onClick={() => openModule(m)}><span className="module-number">{progress.completed.includes(m.id) ? <Check /> : m.number}</span><div><small>{m.time}</small><h2>{m.title}</h2><p>{m.summary}</p></div><ChevronRight /></button>)}</div></div> }
 
-function Lesson({ module, progress, updateNote, completeModule, openModule, navigate }) {
+function Lesson({ module, progress, completeModule, openModule, navigate }) {
   const index = modules.findIndex(m => m.id === module.id); const done = progress.completed.includes(module.id)
-  return <div className="page lesson-page"><button className="back" onClick={() => navigate('learn')}>← Learning path</button><div className="lesson-heading"><span>Module {module.number} · {module.time}</span><h1>{module.title}</h1><p>{module.summary}</p></div><div className="lesson-layout"><article className="lesson-content"><section className="objectives"><h2>By the end, you can…</h2>{module.objectives.map(x => <p key={x}><Check size={17} />{x}</p>)}</section>{module.sections.map((s, i) => <section key={s.title} className="lesson-section"><small>0{i + 1}</small><h2>{s.title}</h2><p>{s.body}</p></section>)}<section className="terminal"><span>TRY THIS COMMAND</span><code>{module.command}</code><p>{module.commandNote}</p></section><section className="notes"><h2>Your interview notes</h2><textarea value={progress.notes[module.id] || ''} onChange={e => updateNote(module.id, e.target.value)} placeholder="Rewrite the core idea in your own words. What would you say in an interview?" /></section><div className="lesson-actions"><button className={done ? 'complete done' : 'complete'} onClick={() => completeModule(module.id)}>{done ? <><Check /> Completed</> : 'Mark lesson complete'}</button>{index < modules.length - 1 ? <button className="primary" onClick={() => openModule(modules[index + 1])}>Next module <ChevronRight /></button> : <button className="primary" onClick={() => navigate('quiz')}>Take final quiz <ChevronRight /></button>}</div></article><aside className="interview-tip"><b>INTERVIEW LENS</b><p>Structure answers as: protect service → preserve evidence → isolate the fault domain → make one controlled change → validate → document and prevent recurrence.</p></aside></div></div>
+  return <div className="page lesson-page"><button className="back" onClick={() => navigate('learn')}>← Learning path</button><div className="lesson-heading"><span>Module {module.number} · {module.time}</span><h1>{module.title}</h1><p>{module.summary}</p></div><div className="lesson-layout"><article className="lesson-content"><section className="objectives"><h2>By the end, you can…</h2>{module.objectives.map(x => <p key={x}><Check size={17} />{x}</p>)}</section>{module.sections.map((s, i) => <section key={s.title} className="lesson-section"><small>0{i + 1}</small><h2>{s.title}</h2><p>{s.body}</p></section>)}<section className="terminal"><span>TRY THIS COMMAND</span><code>{module.command}</code><p>{module.commandNote}</p></section><InterviewQuestion key={module.id} questions={module.interviewQuestions} /><div className="lesson-actions"><button className={done ? 'complete done' : 'complete'} onClick={() => completeModule(module.id)}>{done ? <><Check /> Completed</> : 'Mark lesson complete'}</button>{index < modules.length - 1 ? <button className="primary" onClick={() => openModule(modules[index + 1])}>Next module <ChevronRight /></button> : <button className="primary" onClick={() => navigate('quiz')}>Take final quiz <ChevronRight /></button>}</div></article><aside className="interview-tip"><b>INTERVIEW LENS</b><p>Structure answers as: protect service → preserve evidence → isolate the fault domain → make one controlled change → validate → document and prevent recurrence.</p></aside></div></div>
+}
+
+function InterviewQuestion({ questions }) {
+  const [questionIndex, setQuestionIndex] = useState(() => Math.floor(Math.random() * questions.length))
+  const chooseAnother = () => setQuestionIndex(current => {
+    if (questions.length < 2) return current
+    const offset = 1 + Math.floor(Math.random() * (questions.length - 1))
+    return (current + offset) % questions.length
+  })
+  return <section className="interview-question"><div><span>INTERVIEW QUESTION</span><h2>{questions[questionIndex]}</h2><p>Answer aloud using the evidence, risk, isolation, validation, and communication steps from this lesson.</p></div><button type="button" onClick={chooseAnother}><RotateCcw size={17} /> New question</button></section>
 }
 
 function PracticeLab() { const [active, setActive] = useState(0); const [reveal, setReveal] = useState(false); const s = scenarios[active]; return <div className="page narrow"><div className="page-title"><span>Think like the escalation engineer</span><h1>Practice lab</h1><p>Talk through each scenario aloud. Interviewers care about your sequence, safety, evidence, and communication—not just the component you replace.</p></div><div className="scenario-tabs">{scenarios.map((x, i) => <button className={active === i ? 'active' : ''} onClick={() => { setActive(i); setReveal(false) }} key={x.title}>{i + 1}. {x.title}</button>)}</div><article className="scenario"><small>INCIDENT BRIEF</small><h2>{s.title}</h2><p className="prompt">{s.prompt}</p><ol>{s.steps.map(x => <li key={x}>{x}</li>)}</ol><button className="primary" onClick={() => setReveal(v => !v)}>{reveal ? 'Hide coaching notes' : 'Reveal coaching notes'}</button>{reveal && <div className="model"><b>A strong direction</b><p>{s.model}</p></div>}</article></div> }

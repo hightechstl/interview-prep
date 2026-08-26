@@ -8,6 +8,7 @@ export const modules = [
       { title: 'Follow the boot', body: 'Power reaches standby circuits → the BMC starts → the system powers on → BIOS/UEFI performs POST and trains memory and PCIe links → firmware selects a boot device → the bootloader starts Linux → Linux loads drivers and services. The last successful stage sharply narrows your search.' },
       { title: 'A safe diagnostic habit', body: 'Observe before changing anything. Record the symptom, timestamps, asset tag, firmware versions, LEDs, BMC events, and recent work. Change one variable at a time. A reboot or firmware update can erase evidence or introduce a second problem.' },
     ],
+    interviewQuestions: ['Walk me through the server boot process from standby power to a usable Linux login.', 'A server powers on but never reaches the bootloader. How would you narrow down the failing stage?', 'How would you explain the difference between the BMC, BIOS/UEFI, bootloader, and operating system?'],
     command: 'dmidecode -t system -t baseboard -t processor -t memory', commandNote: 'Inventory the platform and map operating-system names to physical hardware.'
   },
   {
@@ -18,7 +19,7 @@ export const modules = [
       { title: 'Redundancy is not immunity', body: 'Dual PSUs usually share load and allow one feed to fail. Check both facility feeds, PDUs, cords, PSU LEDs, BMC power readings, and whether the installed PSUs match. A healthy-looking redundant PSU can hide a lost feed until the other side fails.' },
       { title: 'Heat changes symptoms', body: 'Blocked airflow, failed fans, missing blanks, dust, loose heatsinks, or high inlet temperature may cause throttling, corrected errors, shutdowns, and shortened component life. Correlate sensor history with workload and failure time.' },
       { title: 'Hands-on discipline', body: 'Confirm the correct asset, drain workload, obtain authorization, wear ESD protection, photograph cable placement, label parts, and verify service restoration. Never treat “reseat it” as a harmless first step.' },
-    ], command: 'ipmitool sensor list | egrep -i "temp|fan|volt|power"', commandNote: 'Review live environmental sensors; compare values with platform thresholds and history.'
+    ], interviewQuestions: ['A dual-PSU server remains online after losing one feed. What would you check before calling the system healthy?', 'How would you determine whether repeated CPU throttling is caused by workload, airflow, or a hardware fault?', 'Describe the safety and change-control steps you would follow before replacing a power supply in production.'], command: 'ipmitool sensor list | egrep -i "temp|fan|volt|power"', commandNote: 'Review live environmental sensors; compare values with platform thresholds and history.'
   },
   {
     id: 'memory', number: '03', title: 'Memory, ECC & CPU diagnostics', time: '45 min',
@@ -28,7 +29,7 @@ export const modules = [
       { title: 'ECC in plain English', body: 'ECC memory can detect and correct some bit errors. A corrected error is not an outage, but a rising count is predictive evidence. An uncorrected error cannot be safely repaired in flight and may trigger a machine check, crash, or DIMM disable.' },
       { title: 'Fault-domain thinking', body: 'The DIMM is only one suspect. The slot, memory channel, CPU-integrated memory controller, motherboard traces, firmware, temperature, and seating can produce similar events. First identify the physical label and inspect error rate, recurrence, and nearby sensors.' },
       { title: 'Prove, do not guess', body: 'After collecting evidence and following the vendor population rules, move the suspected DIMM to a known-good slot or place a known-good DIMM in the suspect slot. If the fault follows the DIMM, suspect the DIMM; if it stays with the slot/channel, investigate board or CPU path.' },
-    ], command: 'journalctl -k | egrep -i "edac|ecc|mce|machine check"', commandNote: 'Find kernel-reported memory and machine-check events, then correlate timestamps with the BMC log.'
+    ], interviewQuestions: ['Corrected ECC errors are rising on one DIMM. How would you decide whether and when to drain the host?', 'How would you distinguish a failed DIMM from a bad slot, memory channel, CPU, or motherboard?', 'What evidence would you collect before opening an OEM case for an uncorrectable memory error?'], command: 'journalctl -k | egrep -i "edac|ecc|mce|machine check"', commandNote: 'Find kernel-reported memory and machine-check events, then correlate timestamps with the BMC log.'
   },
   {
     id: 'pcie', number: '04', title: 'PCIe, GPUs & accelerators', time: '45 min',
@@ -38,7 +39,7 @@ export const modules = [
       { title: 'A negotiated highway', body: 'A PCIe device trains a link at a generation and lane width supported by both endpoints. A Gen5 x16 GPU unexpectedly running at x8 or repeatedly disappearing may point to bifurcation settings, cabling, riser seating, signal integrity, power, firmware, or the device itself.' },
       { title: 'AER evidence', body: 'Advanced Error Reporting records corrected, uncorrected non-fatal, and fatal link errors. Corrected errors can be early warnings; fatal errors may remove a device. Map the BDF address to the physical topology before touching hardware.' },
       { title: 'GPU-specific checks', body: 'Capture driver state, temperatures, power, ECC counters, Xid events, topology, and workload context. GPU-dense systems add high power draw, complex cabling, and airflow sensitivity—do not assume every Xid means a failed GPU.' },
-    ], command: 'lspci -tv && lspci -vv -s <BDF>', commandNote: 'Map topology, then inspect link speed/width, capabilities, and AER status for one device.'
+    ], interviewQuestions: ['A GPU expected to run at PCIe x16 negotiates at x8. How would you isolate the cause?', 'One GPU disappears only under load. What evidence and controlled tests would you use?', 'How do corrected, non-fatal, and fatal PCIe AER errors change your response?'], command: 'lspci -tv && lspci -vv -s <BDF>', commandNote: 'Map topology, then inspect link speed/width, capabilities, and AER status for one device.'
   },
   {
     id: 'storage', number: '05', title: 'Storage, RAID & data protection', time: '45 min',
@@ -48,7 +49,7 @@ export const modules = [
       { title: 'Protect data first', body: 'Before pulling a drive, confirm the exact bay, array state, redundancy level, backups, rebuild policy, and active workload. Pulling the wrong disk from a degraded RAID set can turn a repair into data loss.' },
       { title: 'Drive or path?', body: 'One drive with media errors suggests the device; several drives dropping together suggests a controller, expander, backplane, cable, power, firmware, or thermal issue. Use timestamps and topology to find the shared dependency.' },
       { title: 'Health is more than “passed”', body: 'Review reallocated sectors, pending sectors, CRC/interface errors, NVMe critical warnings, spare percentage, temperature, media errors, and controller logs. Vendor thresholds and trend direction matter more than a single generic health flag.' },
-    ], command: 'smartctl -x /dev/sdX  # or: nvme smart-log /dev/nvme0', commandNote: 'Collect device health without running a destructive test; preserve output with the incident.'
+    ], interviewQuestions: ['Several drives behind one backplane disappear simultaneously. How would you identify the shared fault domain?', 'What would you verify before removing a drive from a degraded RAID array?', 'SMART reports “PASSED,” but a drive keeps timing out. What other evidence would you examine?'], command: 'smartctl -x /dev/sdX  # or: nvme smart-log /dev/nvme0', commandNote: 'Collect device health without running a destructive test; preserve output with the incident.'
   },
   {
     id: 'firmware', number: '06', title: 'BIOS, BMC & firmware operations', time: '40 min',
@@ -58,7 +59,7 @@ export const modules = [
       { title: 'Your out-of-band window', body: 'The BMC remains available when the host OS is down. It exposes sensors, event logs, power controls, inventory, and a remote console through IPMI, Redfish, iDRAC, iLO, or OEM tools. Treat it as privileged infrastructure and use least access.' },
       { title: 'Logs have limits', body: 'The System Event Log may wrap, use a different clock, or contain stale events. Export it before clearing anything, verify time zones, and correlate it with Linux logs, monitoring, and maintenance records.' },
       { title: 'Firmware is a change, not a reflex', body: 'Verify model, hardware revision, dependency order, release notes, known issues, rollback support, maintenance window, redundant power, and recovery procedure. Capture settings and versions before and after; validate the actual symptom afterward.' },
-    ], command: 'ipmitool sel elist && ipmitool mc info', commandNote: 'Export detailed hardware events and identify the management controller firmware.'
+    ], interviewQuestions: ['When is a firmware update an appropriate troubleshooting step, and how would you reduce its risk?', 'The BMC and Linux logs show different timestamps. How would you build a trustworthy incident timeline?', 'What can you diagnose through iDRAC, iLO, IPMI, or Redfish when the host operating system is unavailable?'], command: 'ipmitool sel elist && ipmitool mc info', commandNote: 'Export detailed hardware events and identify the management controller firmware.'
   },
   {
     id: 'linux', number: '07', title: 'Linux evidence & structured RCA', time: '50 min',
@@ -68,7 +69,7 @@ export const modules = [
       { title: 'Build a timeline', body: 'Start with UTC-normalized timestamps. Combine the ticket, monitoring alerts, BMC SEL, kernel journal, application impact, changes, and physical actions. A timeline exposes ordering and prevents “the last error must be the cause” reasoning.' },
       { title: 'Hypothesis-driven troubleshooting', body: 'State candidate causes, identify the evidence each predicts, and choose the least disruptive test that best separates them. Record negative evidence too. Stop when evidence supports a cause strongly enough for the risk and business impact.' },
       { title: 'RCA structure', body: 'Write: impact; detection and timeline; technical root cause; contributing factors; corrective and preventive actions with owners and dates. “Replaced motherboard” is a repair action—not a root cause.' },
-    ], command: 'journalctl -k -b -1 --since "2026-01-01 10:00 UTC"', commandNote: 'Inspect kernel messages from the previous boot in a bounded incident window.'
+    ], interviewQuestions: ['How do you distinguish a root cause from a symptom, contributing factor, and repair action?', 'Walk me through how you would build an incident timeline after an unexpected server reboot.', 'Describe a hypothesis-driven troubleshooting process for an intermittent hardware failure.'], command: 'journalctl -k -b -1 --since "2026-01-01 10:00 UTC"', commandNote: 'Inspect kernel messages from the previous boot in a bounded incident window.'
   },
   {
     id: 'rma', number: '08', title: 'RMA lifecycle, metrics & vendor cases', time: '50 min',
@@ -78,7 +79,7 @@ export const modules = [
       { title: 'The lifecycle', body: 'Triage → preserve evidence → isolate and validate → check warranty/entitlement → open vendor case → meet requested diagnostics → receive and inspect replacement → install and validate → return failed part → update inventory → close only after production observation.' },
       { title: 'A case vendors can act on', body: 'Include asset and serial numbers, part number, firmware bundle, exact symptom, business impact, timestamps, logs, diagnostics, isolation steps, reproduction, photos if relevant, shipping details, and a clear requested action. Avoid vague claims such as “server is broken.”' },
       { title: 'Turn tickets into reliability', body: 'Track time to acknowledge, time to isolate, vendor response, time to replacement, MTTR, failure rate by model/lot/age, no-fault-found rate, repeat RMA rate, and recurrence after repair. Segment before drawing conclusions; more failures may simply reflect a larger installed base.' },
-    ], command: 'Repeat RMA rate = repeat RMAs ÷ completed RMAs × 100', commandNote: 'Define the repeat window and denominator consistently so the metric drives corrective action.'
+    ], interviewQuestions: ['Walk me through the complete RMA lifecycle from initial symptom to verified production recovery.', 'A server has received three motherboard replacements in 60 days. How would you escalate the repeat failure?', 'Which RMA and reliability metrics would you report, and how would you prevent misleading conclusions?'], command: 'Repeat RMA rate = repeat RMAs ÷ completed RMAs × 100', commandNote: 'Define the repeat window and denominator consistently so the metric drives corrective action.'
   },
 ]
 
