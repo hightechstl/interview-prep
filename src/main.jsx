@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BookOpen, Check, ChevronRight, CircleHelp, ClipboardCheck, FlaskConical, Gauge, Home, Menu, Moon, RotateCcw, Search, Sun, X } from 'lucide-react'
+import { BookOpen, Check, ChevronRight, CircleHelp, ClipboardCheck, Eye, EyeOff, FlaskConical, Gauge, Home, Menu, Moon, RotateCcw, Search, Sun, X } from 'lucide-react'
 import { glossary, modules, quizQuestions, scenarios } from './content'
 import './styles.css'
 import './interview-question.css'
@@ -86,12 +86,17 @@ function Lesson({ module, progress, completeModule, openModule, navigate }) {
 
 function InterviewQuestion({ questions }) {
   const [questionIndex, setQuestionIndex] = useState(() => Math.floor(Math.random() * questions.length))
-  const chooseAnother = () => setQuestionIndex(current => {
-    if (questions.length < 2) return current
-    const offset = 1 + Math.floor(Math.random() * (questions.length - 1))
-    return (current + offset) % questions.length
-  })
-  return <section className="interview-question"><div><span>INTERVIEW QUESTION</span><h2>{questions[questionIndex]}</h2><p>Answer aloud using the evidence, risk, isolation, validation, and communication steps from this lesson.</p></div><button type="button" onClick={chooseAnother}><RotateCcw size={17} /> New question</button></section>
+  const [showExample, setShowExample] = useState(false)
+  const chooseAnother = () => {
+    setShowExample(false)
+    setQuestionIndex(current => {
+      if (questions.length < 2) return current
+      const offset = 1 + Math.floor(Math.random() * (questions.length - 1))
+      return (current + offset) % questions.length
+    })
+  }
+  const current = questions[questionIndex]
+  return <section className="interview-question"><div className="interview-question-copy"><span>INTERVIEW QUESTION</span><h2>{current.question}</h2><p>Answer aloud using the evidence, risk, isolation, validation, and communication steps from this lesson.</p><div className="interview-question-controls"><button type="button" className="reveal-example" aria-expanded={showExample} onClick={() => setShowExample(value => !value)}>{showExample ? <EyeOff size={17} /> : <Eye size={17} />}{showExample ? 'Hide example' : 'Reveal example'}</button><button type="button" onClick={chooseAnother}><RotateCcw size={17} /> New question</button></div>{showExample ? <div className="example-answer"><b>Example answer</b><p>{current.example}</p></div> : null}</div></section>
 }
 
 function PracticeLab() { const [active, setActive] = useState(0); const [reveal, setReveal] = useState(false); const s = scenarios[active]; return <div className="page narrow"><div className="page-title"><span>Think like the escalation engineer</span><h1>Practice lab</h1><p>Talk through each scenario aloud. Interviewers care about your sequence, safety, evidence, and communication—not just the component you replace.</p></div><div className="scenario-tabs">{scenarios.map((x, i) => <button className={active === i ? 'active' : ''} onClick={() => { setActive(i); setReveal(false) }} key={x.title}>{i + 1}. {x.title}</button>)}</div><article className="scenario"><small>INCIDENT BRIEF</small><h2>{s.title}</h2><p className="prompt">{s.prompt}</p><ol>{s.steps.map(x => <li key={x}>{x}</li>)}</ol><button className="primary" onClick={() => setReveal(v => !v)}>{reveal ? 'Hide coaching notes' : 'Reveal coaching notes'}</button>{reveal && <div className="model"><b>A strong direction</b><p>{s.model}</p></div>}</article></div> }

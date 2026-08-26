@@ -1,5 +1,4 @@
 .interview-question {
-  align-items: flex-end;
   background: var(--surface);
   border: 1px solid var(--line);
   border-left: 4px solid var(--amber);
@@ -7,6 +6,10 @@
   gap: 24px;
   justify-content: space-between;
   padding: 24px;
+}
+
+.interview-question-copy {
+  width: 100%;
 }
 
 .interview-question span {
@@ -25,7 +28,14 @@
   margin: 0;
 }
 
-.interview-question button {
+.interview-question-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.interview-question-controls button {
   align-items: center;
   background: transparent;
   border: 1px solid var(--line);
@@ -37,13 +47,41 @@
   white-space: nowrap;
 }
 
+.interview-question-controls .reveal-example {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.example-answer {
+  background: color-mix(in srgb, var(--blue) 6%, var(--surface));
+  border-left: 3px solid var(--blue);
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.example-answer b {
+  color: var(--blue);
+  font-size: 14px;
+}
+
+.example-answer p {
+  color: var(--ink);
+  line-height: 1.65;
+  margin-top: 8px;
+}
+
 @media (max-width: 640px) {
   .interview-question {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .interview-question button {
+  .interview-question-controls {
+    flex-direction: column;
+  }
+
+  .interview-question-controls button {
     justify-content: center;
   }
 }
