@@ -1,11 +1,12 @@
-# InfraPrep — IT Infrastructure Engineer
+# RolePrep — Interactive Interview Study Guides
 
-An interactive, beginner-first study guide for the **IT Infrastructure Engineer — RMA & Hardware Diagnostics** interview path.
+An extensible, interactive platform for beginner-first job interview study guides. The first available role track is **IT Infrastructure Engineer — RMA & Hardware Diagnostics**.
 
 ## What is included
 
 - A 12-question baseline and final assessment with explanations
-- Eight guided modules covering server architecture, memory/ECC, power and thermals, PCIe/GPU, storage, firmware/BMC, Linux/RCA, and RMA ownership
+- Eight extensive modules with 48 teaching sections covering server architecture, memory/ECC, power and thermals, PCIe/GPU, storage, firmware/BMC, Linux/RCA, and RMA ownership
+- Beginner definitions, mental models, terminology, ordered diagnostic procedures, worked examples, and revealable comprehension checks
 - Incident practice labs with coaching notes
 - Searchable glossary
 - Browser-local progress, quiz results, notes, theme, and completion tracking
@@ -30,7 +31,7 @@ The included workflow deploys `dist/` whenever `main` is pushed. In the reposito
 
 ## Add another role
 
-The current study content lives in `src/content.js` and the product shell in `src/main.jsx`. The next evolution should extract role metadata/content into separate files under `src/roles/<role-slug>/`, then add a role picker before the dashboard. Keeping content separate from the UI makes new role tracks straightforward to add.
+Each role is a self-contained object registered in `src/roles/index.js`. Add a new file under `src/roles/` containing its metadata, modules, quizzes, glossary, scenarios, and dashboard content, then register it in `roleCatalog`. Progress is stored separately per role.
 
 ## Important note
 
