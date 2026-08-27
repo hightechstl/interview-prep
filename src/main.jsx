@@ -61,7 +61,6 @@ const nav = [['roles', BriefcaseBusiness, 'Roles'], ['overview', Home, 'Overview
 function Sidebar({ view, open, navigate }) { return <aside className={`sidebar ${open ? 'open' : ''}`}>
   <div className="brand">Role<span>Prep</span></div>
   <nav>{nav.map(([id, Icon, label]) => <button key={id} className={view === id ? 'active' : ''} onClick={() => navigate(id)}><Icon size={20} />{label}</button>)}</nav>
-  <div className="rack-marks" aria-hidden="true">{[42,36,30,24,18,12,6].map(n => <span key={n}>{n}U</span>)}</div>
   <a className="site-return" href="https://hightechstl.com/"><Home size={17} />High-Tech STL home</a>
   <div className="system-status"><i /> <strong>Study data saved</strong><small>Stored only in this browser</small></div>
 </aside> }
