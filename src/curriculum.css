@@ -18,6 +18,40 @@
   gap: 20px;
 }
 
+.catalog-section + .catalog-section {
+  margin-top: 54px;
+}
+
+.catalog-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  margin: 0 0 18px;
+}
+
+.catalog-heading > svg {
+  color: var(--blue);
+  flex: 0 0 30px;
+  height: 30px;
+  margin-top: 3px;
+  width: 30px;
+}
+
+.catalog-heading span {
+  color: var(--blue);
+  font: 11px 'IBM Plex Mono';
+}
+
+.catalog-heading h2 {
+  font: 600 31px/1.1 'Newsreader';
+  margin: 3px 0 5px;
+}
+
+.catalog-heading p {
+  color: var(--muted);
+  margin: 0;
+}
+
 .role-cards article {
   align-items: end;
   background: var(--surface);
@@ -27,6 +61,64 @@
   gap: 30px;
   grid-template-columns: 1fr auto;
   padding: clamp(25px, 4vw, 42px);
+}
+
+.role-cards article.certification-card {
+  border-left-color: var(--amber);
+}
+
+.certification-card > div > small,
+.certification-card > div > strong {
+  color: #a86f00 !important;
+}
+
+.track-disclaimer,
+.learning-disclaimer {
+  border-left: 3px solid var(--amber);
+  font-size: 12px;
+  padding-left: 12px;
+}
+
+.learning-disclaimer {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 30px 0;
+}
+
+.exam-facts {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(5, 1fr);
+  margin: -12px 0 24px;
+}
+
+.exam-facts div {
+  border-right: 1px solid var(--line);
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+}
+
+.exam-facts div:last-child {
+  border-right: 0;
+}
+
+.exam-facts span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.exam-facts strong {
+  font-size: 14px;
+}
+
+.pass-note {
+  border-left: 3px solid var(--blue);
+  color: var(--muted);
+  line-height: 1.55;
+  padding: 8px 15px;
 }
 
 .role-cards article > div > small {
@@ -225,5 +317,15 @@
   .term-list dl div {
     gap: 5px;
     grid-template-columns: 1fr;
+  }
+
+  .exam-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .exam-facts div,
+  .exam-facts div:last-child {
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
   }
 }
