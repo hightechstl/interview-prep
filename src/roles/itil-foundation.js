@@ -18,7 +18,7 @@ export const itilFoundationRole = {
   practiceEyebrow: 'Apply ITIL to realistic service decisions',
   practiceIntro: 'Work through each situation before revealing the coaching notes. The goal is to choose and explain the most useful concept—not merely memorize vocabulary.',
   disclaimer: 'Independent study aid. RolePrep is not affiliated with or endorsed by PeopleCert. Exam details can change; use the official PeopleCert syllabus and candidate guidance as the authoritative source.',
-  exam: { questions: 40, minutes: 60, passPercent: 65, format: 'Multiple choice · closed book', version: 'Version 5' },
+  exam: { questions: 40, minutes: 60, practiceMinutes: 60, passPercent: 65, passDisplay: '65%', format: 'Multiple choice · closed book', version: 'Version 5' },
   modules: [
     {
       id: 'itil-orientation', number: '01', title: 'ITIL, Service Management & the Exam', time: '60–75 min', activityLabel: 'PLAIN-ENGLISH PRACTICE',
