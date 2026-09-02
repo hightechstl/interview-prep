@@ -1,11 +1,13 @@
 import { infrastructureRole } from './infrastructure'
 import { supportSpecialistRole } from './support-specialist'
+import { businessSystemsAnalystRole } from './business-systems-analyst'
 import { itilFoundationRole } from './itil-foundation'
 import { comptiaAPlusRole, comptiaCloudPlusRole, comptiaLinuxPlusRole, comptiaNetworkPlusRole, comptiaSecurityPlusRole } from './comptia-tracks'
 
 export const roleCatalog = [
   infrastructureRole,
   supportSpecialistRole,
+  businessSystemsAnalystRole,
   itilFoundationRole,
   comptiaAPlusRole,
   comptiaNetworkPlusRole,
